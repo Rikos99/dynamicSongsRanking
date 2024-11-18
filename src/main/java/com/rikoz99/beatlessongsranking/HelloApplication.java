@@ -1,6 +1,7 @@
 package com.rikoz99.beatlessongsranking;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -123,10 +124,15 @@ public class HelloApplication extends Application {
         {
             song = sc.nextLine();
             songsList.add(new Label(song));
+            HBox.setMargin(songsList.get(i), new Insets(0, 0, 0, 5));
             orderList.add(new TextField());
             orderList.get(i).setPromptText(String.valueOf(i+1));
             addEntryToList(list, i);
             i++;
+        }
+        for (int j = 0; j < orderList.size(); j++)
+        {
+            orderList.get(j).setPrefWidth(String.valueOf(i).length()*15);
         }
         sc.close();
     }
@@ -146,7 +152,7 @@ public class HelloApplication extends Application {
         songsList.clear();
         orderList.clear();
     }
-    private static void changePosInList(VBox list, int before, int after)
+    private static void changePosInList(VBox list, int before, int after) //Změnit na posunutí zbytku dolů místo čistého swapu
     {
         after -= 1;
         before -= 1;
