@@ -48,9 +48,10 @@ public class HelloApplication extends Application {
             propsFile.createNewFile();
         }
         props.load(new FileReader(propsFile.getAbsoluteFile()));
-        if(props.getProperty("file") != null)
+
+        fr = new File(props.getProperty("file"));
+        if(fr.isFile())
         {
-            fr = new File(props.getProperty("file"));
             clearList(list);
             fillListFromFile(list);
         }
@@ -73,13 +74,14 @@ public class HelloApplication extends Application {
             }
         });
 
-        for(TextField textField :  orderList)
+        for(TextField textField : orderList)
         {
             textField.textProperty().addListener((observable, oldValue, newValue) -> { //TODO změnit to, že do prázdného TF se zadává nová pozice, tohle kurva nefunguje, protože když vymažeš číslo a napíšeš nové, zapíše se prázdná hodnota jako before, což je na piču
-                if(!newValue.matches("\\d+"))
+                if(newValue.matches("\\d+"))
                 {
-                    changePosInList(list, Integer.parseInt(oldValue), Integer.parseInt(newValue));
+                    changePosInList(list, Integer.parseInt(textField.getPromptText()), Integer.parseInt(newValue));
                 }
+                textField.setText("");
             });
         }
 
@@ -121,21 +123,20 @@ public class HelloApplication extends Application {
         {
             song = sc.nextLine();
             songsList.add(new Label(song));
-            orderList.add(new TextField(String.valueOf(i+1)));
-            HBoxList.add(new HBox(orderList.get(i), songsList.get(i)));
-            list.getChildren().add(HBoxList.get(i));
+            orderList.add(new TextField());
+            orderList.get(i).setPromptText(String.valueOf(i+1));
+            addEntryToList(list, i);
             i++;
         }
         sc.close();
     }
-    private static void fillListFromLists(VBox list)
+    private static void fillListFromLists(VBox list) //použité jako "refresh" po změně pořadí
     {
         list.getChildren().clear();
         HBoxList.clear();
         for (int i = 0; i < orderList.size(); i++)
         {
-            HBoxList.add(new HBox(orderList.get(i), songsList.get(i)));
-            list.getChildren().add(HBoxList.get(i));
+            addEntryToList(list, i);
         }
     }
     private static void clearList(VBox list)
@@ -147,11 +148,16 @@ public class HelloApplication extends Application {
     }
     private static void changePosInList(VBox list, int before, int after)
     {
-        after += 1;
+        after -= 1;
         before -= 1;
         Label pomLBL = songsList.get(before);
         songsList.set(before, songsList.get(after));
         songsList.set(after, pomLBL);
         fillListFromLists(list);
+    }
+    private static void addEntryToList(VBox list, int i)
+    {
+        HBoxList.add(new HBox(orderList.get(i), songsList.get(i)));
+        list.getChildren().add(HBoxList.get(i));
     }
 }
